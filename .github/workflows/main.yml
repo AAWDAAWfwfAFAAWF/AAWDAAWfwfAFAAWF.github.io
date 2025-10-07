@@ -1,9 +1,9 @@
-name: Minecraft Server 1.16.5 Host
+name: PaperMC Minecraft Server 1.16.5 Host
 
 on: [push]
 
 jobs:
-  run-minecraft-server:
+  run-papermc-server:
     runs-on: ubuntu-latest
 
     steps:
@@ -13,37 +13,39 @@ jobs:
         distribution: 'temurin'
         java-version: 16
 
-    - name: Download Minecraft 1.16.5 server jar dynamically
+    - name: Download PaperMC versions JSON and get latest build for 1.16.5
       run: |
         mkdir mc_server
         cd mc_server
 
-        # Download versions manifest
-        curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json -o versions.json
+        # Download versions JSON
+        curl -s https://gist.githubusercontent.com/osipxd/6119732e30059241c2192c4a8d2218d9/raw/d8b5faadcfdfadfa0ff58dbf7c04cd10de16c678/paper-versions.json -o paper-versions.json
 
-        # Extract URL for 1.16.5 version manifest
-        VERSION_URL=$(jq -r '.versions[] | select(.id=="1.16.5") | .url' versions.json)
+        # Extract latest build number for 1.16.5
+        BUILD=$(jq -r '.["1.16.5"] | max' paper-versions.json)
 
-        # Download version manifest for 1.16.5
-        curl -s "$VERSION_URL" -o 1.16.5.json
+        echo "Latest PaperMC build for 1.16.5 is $BUILD"
 
-        # Extract server download URL
-        SERVER_JAR_URL=$(jq -r '.downloads.server.url' 1.16.5.json)
+        # Construct the download URL for PaperMC jar
+        # Format: https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/{build}/downloads/paper-1.16.5-{build}.jar
+        PAPER_URL="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/${BUILD}/downloads/paper-1.16.5-${BUILD}.jar"
 
-        # Download server jar
-        wget -O server.jar "$SERVER_JAR_URL"
+        echo "Downloading PaperMC server from $PAPER_URL"
+
+        # Download the PaperMC server jar
+        wget -O paper.jar "$PAPER_URL"
 
     - name: Accept EULA
       run: echo "eula=true" > mc_server/eula.txt
 
-    - name: Run Minecraft Server 1.16.5
+    - name: Run PaperMC Server
       run: |
         cd mc_server
-        nohup java -Xmx1024M -Xms1024M -jar server.jar nogui &
+        nohup java -Xmx1024M -Xms1024M -jar paper.jar nogui &
 
         sleep 20
 
         IP=$(hostname -I | awk '{print $1}')
-        echo "Minecraft Server is running at IP: $IP and Port: 25565"
+        echo "PaperMC Server 1.16.5 is running at IP: $IP and Port: 25565"
 
         tail -n 20 nohup.out

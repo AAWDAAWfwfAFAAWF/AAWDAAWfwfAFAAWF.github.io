@@ -13,7 +13,7 @@ jobs:
         distribution: 'temurin'
         java-version: 16
 
-    - name: Download PaperMC versions JSON and get latest build for 1.16.5
+    - name: Download PaperMC versions JSON and get server jar URL for 1.16.5
       run: |
         mkdir mc_server
         cd mc_server
@@ -21,16 +21,10 @@ jobs:
         # Download versions JSON
         curl -s https://gist.githubusercontent.com/osipxd/6119732e30059241c2192c4a8d2218d9/raw/d8b5faadcfdfadfa0ff58dbf7c04cd10de16c678/paper-versions.json -o paper-versions.json
 
-        # Extract latest build number for 1.16.5
-        BUILD=$(jq -r '.["1.16.5"] | max' paper-versions.json)
+        # Extract direct download URL for 1.16.5
+        PAPER_URL=$(jq -r '.versions["1.16.5"]' paper-versions.json)
 
-        echo "Latest PaperMC build for 1.16.5 is $BUILD"
-
-        # Construct the download URL for PaperMC jar
-        # Format: https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/{build}/downloads/paper-1.16.5-{build}.jar
-        PAPER_URL="https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/${BUILD}/downloads/paper-1.16.5-${BUILD}.jar"
-
-        echo "Downloading PaperMC server from $PAPER_URL"
+        echo "PaperMC 1.16.5 server jar URL: $PAPER_URL"
 
         # Download the PaperMC server jar
         wget -O paper.jar "$PAPER_URL"

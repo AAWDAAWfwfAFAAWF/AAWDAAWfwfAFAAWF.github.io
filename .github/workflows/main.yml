@@ -13,11 +13,25 @@ jobs:
         distribution: 'temurin'
         java-version: 16
 
-    - name: Download Minecraft Server 1.16.5
+    - name: Download Minecraft 1.16.5 server jar dynamically
       run: |
         mkdir mc_server
         cd mc_server
-        wget -O server.jar https://launcher.mojang.com/v1/objects/fe3f7a40c1779f6a9a4a1f9789a64e7a9f545cd5/server.jar
+
+        # Download versions manifest
+        curl -s https://launchermeta.mojang.com/mc/game/version_manifest.json -o versions.json
+
+        # Extract URL for 1.16.5 version manifest
+        VERSION_URL=$(jq -r '.versions[] | select(.id=="1.16.5") | .url' versions.json)
+
+        # Download version manifest for 1.16.5
+        curl -s "$VERSION_URL" -o 1.16.5.json
+
+        # Extract server download URL
+        SERVER_JAR_URL=$(jq -r '.downloads.server.url' 1.16.5.json)
+
+        # Download server jar
+        wget -O server.jar "$SERVER_JAR_URL"
 
     - name: Accept EULA
       run: echo "eula=true" > mc_server/eula.txt
@@ -25,15 +39,11 @@ jobs:
     - name: Run Minecraft Server 1.16.5
       run: |
         cd mc_server
-        # Run server in background
         nohup java -Xmx1024M -Xms1024M -jar server.jar nogui &
 
-        # Wait a bit for server to start
         sleep 20
 
-        # Get IP address of the runner
         IP=$(hostname -I | awk '{print $1}')
         echo "Minecraft Server is running at IP: $IP and Port: 25565"
 
-        # Show server logs tail
         tail -n 20 nohup.out

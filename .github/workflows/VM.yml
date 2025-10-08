@@ -1,0 +1,28 @@
+name: Run on VM
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  vm-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Python (example setup)
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: Run a script on the VM
+        run: |
+          echo "Running on VM"
+          python --version
+          # Add more commands or scripts here

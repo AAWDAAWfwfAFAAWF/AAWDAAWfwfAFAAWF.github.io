@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">d
+<html lang="en">
 <head>
-  <link rel="icon" href="https://raw.githubusercontent.com/AAWDAAWfwfAFAAWF/AAWDAAWfwfAFAAWF.github.io/refs/heads/main/Icons/Yeserrr.ico" type="image/png" />
+  <link rel="icon" href="https://raw.githubusercontent.com/AAWDAAWfwfAFAAWF/AAWDAAWfwfAFAAWF.github.io/refs/heads/main/Icons/Yeserrr.ico" type="image/ico" />
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>2FA Shit</title>
   <style>
-    /* Reset & Base */
     * {
       box-sizing: border-box;
     }
@@ -191,7 +190,6 @@
       background-color: #ddd;
       outline: none;
     }
-    /* Tooltip */
     .tooltip {
       position: absolute;
       top: -1.8rem;
@@ -212,7 +210,6 @@
     .tooltip.visible {
       opacity: 1;
     }
-    /* Bottom popup message */
     #popup-message {
       position: fixed;
       bottom: 20px;
@@ -246,10 +243,73 @@
         max-width: 100%;
       }
     }
+    #about-btn {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      padding: 0.4rem 0.8rem;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      z-index: 10001;
+      user-select: none;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    #about-btn:hover, #about-btn:focus {
+      background-color: #ddd;
+      outline: none;
+    }
+    #about-popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%) scale(0);
+      background-color: #111;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      padding: 1.5rem 2rem;
+      width: 320px;
+      max-width: 90vw;
+      box-shadow: 0 0 15px 3px #fff;
+      color: #fff;
+      font-weight: 700;
+      font-size: 1rem;
+      text-align: center;
+      z-index: 10002;
+      user-select: none;
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    #about-popup.visible {
+      transform: translate(-50%, -50%) scale(1);
+      pointer-events: auto;
+    }
+    #about-popup button.close-popup {
+      margin-top: 1rem;
+      background-color: #fff;
+      color: #000;
+      border: none;
+      border-radius: 4px;
+      padding: 0.4rem 1rem;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      user-select: none;
+      transition: background-color 0.2s ease, color 0.2s ease;
+    }
+    #about-popup button.close-popup:hover, #about-popup button.close-popup:focus {
+      background-color: #ddd;
+      outline: none;
+    }
   </style>
 </head>
 <body>
   <div id="particles-js"></div>
+  <button id="about-btn" aria-label="About">About</button>
   <main>
     <form id="addForm" autocomplete="off" onsubmit="return false;">
       <input type="text" id="labelInput" placeholder="Account label (e.g. GitHub)" required aria-label="Account label" />
@@ -267,7 +327,6 @@
         </tr>
       </thead>
       <tbody>
-        <!-- Dynamic rows -->
       </tbody>
     </table>
 
@@ -276,32 +335,25 @@
 
   <div id="popup-message" role="alert" aria-live="assertive" aria-atomic="true"></div>
 
-  <!-- Load particles.js for snow effect -->
+  <div id="about-popup" role="dialog" aria-modal="true" aria-labelledby="about-popup-title" aria-describedby="about-popup-desc" tabindex="-1">
+    <div id="about-popup-title" style="font-size:1.2rem; margin-bottom: 0.5rem;">Dev. Plutana-eng</div>
+    <div id="about-popup-desc" style="line-height:1.4;">All 2FA Things Are Stored Locally<br>So Keep The Secrets Saved</div>
+    <button class="close-popup" aria-label="Close About Popup">Close</button>
+  </div>
+
   <script src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.min.js"></script>
 
   <script>
-    // Initialize particles.js with white snow effect
     particlesJS('particles-js', {
       "particles": {
         "number": {
           "value": 120,
-          "density": {
-            "enable": true,
-            "value_area": 800
-          }
+          "density": { "enable": true, "value_area": 800 }
         },
         "color": { "value": "#ffffff" },
         "shape": { "type": "circle" },
-        "opacity": {
-          "value": 0.8,
-          "random": true,
-          "anim": { "enable": false }
-        },
-        "size": {
-          "value": 3,
-          "random": true,
-          "anim": { "enable": false }
-        },
+        "opacity": { "value": 0.8, "random": true, "anim": { "enable": false } },
+        "size": { "value": 3, "random": true, "anim": { "enable": false } },
         "move": {
           "enable": true,
           "speed": 2,
@@ -314,38 +366,28 @@
       },
       "interactivity": {
         "detect_on": "canvas",
-        "events": {
-          "onhover": { "enable": false },
-          "onclick": { "enable": false },
-          "resize": true
-        }
+        "events": { "onhover": { "enable": false }, "onclick": { "enable": false }, "resize": true }
       },
       "retina_detect": true
     });
 
-    // Base32 decode to hex
     function base32tohex(base32) {
       const base32chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
       let bits = "";
       let hex = "";
-
       base32 = base32.toUpperCase().replace(/=+$/, '');
-
       for (let i = 0; i < base32.length; i++) {
         const val = base32chars.indexOf(base32.charAt(i));
         if (val === -1) return null;
         bits += val.toString(2).padStart(5, '0');
       }
-
       for (let i = 0; i + 4 <= bits.length; i += 4) {
         const chunk = bits.substr(i, 4);
         hex += parseInt(chunk, 2).toString(16);
       }
-
       return hex;
     }
 
-    // Hex string to Uint8Array
     function hexToBytes(hex) {
       const bytes = [];
       for (let c = 0; c < hex.length; c += 2) {
@@ -354,7 +396,6 @@
       return new Uint8Array(bytes);
     }
 
-    // Integer to 8-byte big-endian Uint8Array
     function intToBytes(num) {
       const bytes = new Uint8Array(8);
       for (let i = 7; i >= 0; i--) {
@@ -364,7 +405,6 @@
       return bytes;
     }
 
-    // HMAC-SHA1 using Web Crypto API
     async function hmacSha1(keyBytes, messageBytes) {
       const cryptoKey = await crypto.subtle.importKey(
         "raw",
@@ -377,37 +417,33 @@
       return new Uint8Array(signature);
     }
 
-    // Generate TOTP code
     async function generateTOTP(secret, timeStep = 30, digits = 6) {
       const keyHex = base32tohex(secret);
       if (!keyHex) return null;
       const keyBytes = hexToBytes(keyHex);
-
       const epoch = Math.floor(Date.now() / 1000);
       const counter = Math.floor(epoch / timeStep);
-
       const counterBytes = intToBytes(counter);
-
       const hmac = await hmacSha1(keyBytes, counterBytes);
-
       const offset = hmac[hmac.length - 1] & 0x0f;
       const binCode =
         ((hmac[offset] & 0x7f) << 24) |
         ((hmac[offset + 1] & 0xff) << 16) |
         ((hmac[offset + 2] & 0xff) << 8) |
         (hmac[offset + 3] & 0xff);
-
       const otp = binCode % (10 ** digits);
       return otp.toString().padStart(digits, '0');
     }
 
-    // DOM references
     const labelInput = document.getElementById('labelInput');
     const secretInput = document.getElementById('secretInput');
     const addBtn = document.getElementById('addBtn');
     const secretsTableBody = document.querySelector('#secretsTable tbody');
     const downloadBtn = document.getElementById('download-btn');
     const popupMessage = document.getElementById('popup-message');
+    const aboutBtn = document.getElementById('about-btn');
+    const aboutPopup = document.getElementById('about-popup');
+    const aboutCloseBtn = aboutPopup.querySelector('.close-popup');
 
     const STORAGE_KEY = 'local2fa_secrets';
 
@@ -427,7 +463,6 @@
       localStorage.setItem(STORAGE_KEY, JSON.stringify(secrets));
     }
 
-    // Show a bottom popup message for 1 second
     let popupTimeout = null;
     function showPopupMessage(text) {
       if (popupTimeout) {
@@ -440,7 +475,6 @@
       }, 1000);
     }
 
-    // Render secrets table and start TOTP updates
     async function renderSecrets() {
       const secrets = loadSecrets();
       secretsTableBody.innerHTML = '';
@@ -460,13 +494,11 @@
         const { label, secret } = secrets[i];
         const tr = document.createElement('tr');
 
-        // Label
         const labelTd = document.createElement('td');
         labelTd.textContent = label;
         labelTd.title = label;
         tr.appendChild(labelTd);
 
-        // Current TOTP code cell with copy-on-click
         const codeTd = document.createElement('td');
         codeTd.classList.add('totp-code');
         codeTd.setAttribute('tabindex', '0');
@@ -475,7 +507,6 @@
         codeTd.textContent = 'Loading...';
         tr.appendChild(codeTd);
 
-        // Secret cell with show/hide button
         const secretTd = document.createElement('td');
         secretTd.style.display = 'flex';
         secretTd.style.alignItems = 'center';
@@ -506,7 +537,6 @@
         secretTd.appendChild(toggleBtn);
         tr.appendChild(secretTd);
 
-        // Actions (delete button)
         const actionsTd = document.createElement('td');
         actionsTd.classList.add('actions');
         const deleteBtn = document.createElement('button');
@@ -521,13 +551,10 @@
         actionsTd.appendChild(deleteBtn);
         tr.appendChild(actionsTd);
 
-        // Add to table
         secretsTableBody.appendChild(tr);
 
-        // Save code cell for updating
         secrets[i].codeCell = codeTd;
 
-        // Add progress bar container inside code cell
         const progressContainer = document.createElement('div');
         progressContainer.className = 'progress-container';
         const progressBar = document.createElement('div');
@@ -539,7 +566,6 @@
 
       startTOTPUpdate(secrets);
 
-      // Add copy event listeners after render
       secrets.forEach((entry) => {
         const { codeCell } = entry;
         if (!codeCell) return;
@@ -551,7 +577,6 @@
               await navigator.clipboard.writeText(text);
               showPopupMessage('Code copied!');
             } else {
-              // Fallback using execCommand
               const textarea = document.createElement('textarea');
               textarea.value = text;
               document.body.appendChild(textarea);
@@ -579,7 +604,6 @@
       });
     }
 
-    // Update TOTP codes every second, progress bars smoothly with requestAnimationFrame
     let totpInterval = null;
     let animationFrameId = null;
 
@@ -588,7 +612,6 @@
       if (animationFrameId) cancelAnimationFrame(animationFrameId);
 
       async function updateCodes() {
-        const epoch = Math.floor(Date.now() / 1000);
         for (let i = 0; i < secrets.length; i++) {
           const { secret, codeCell } = secrets[i];
           if (!codeCell) continue;
@@ -619,7 +642,6 @@
       updateProgress();
     }
 
-    // Add new secret
     function addSecret(label, secret) {
       label = label.trim();
       secret = secret.trim().toUpperCase().replace(/[^A-Z2-7]/g, '');
@@ -650,7 +672,6 @@
       labelInput.focus();
     }
 
-    // Delete secret by index
     function deleteSecret(index) {
       const secrets = loadSecrets();
       if (index < 0 || index >= secrets.length) return;
@@ -659,18 +680,15 @@
       renderSecrets();
     }
 
-    // Download secrets as TXT file with JSON-like formatting
     function downloadSecrets() {
       const secrets = loadSecrets();
       if (secrets.length === 0) {
         showPopupMessage('No secrets to download');
         return;
       }
-      // Pretty print JSON string
       const textContent = JSON.stringify(secrets.map(({label, secret}) => ({label, secret})), null, 2);
       const blob = new Blob([textContent], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
-
       const a = document.createElement('a');
       a.href = url;
       a.download = '2fa-secrets.txt';
@@ -678,11 +696,9 @@
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
       showPopupMessage('Secrets downloaded');
     }
 
-    // Event listeners
     addBtn.addEventListener('click', () => {
       addSecret(labelInput.value, secretInput.value);
     });
@@ -696,7 +712,23 @@
 
     downloadBtn.addEventListener('click', downloadSecrets);
 
-    // Initial render
+    aboutBtn.addEventListener('click', () => {
+      aboutPopup.classList.add('visible');
+      aboutPopup.focus();
+    });
+
+    aboutCloseBtn.addEventListener('click', () => {
+      aboutPopup.classList.remove('visible');
+      aboutBtn.focus();
+    });
+
+    aboutPopup.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        aboutPopup.classList.remove('visible');
+        aboutBtn.focus();
+      }
+    });
+
     renderSecrets();
   </script>
 </body>

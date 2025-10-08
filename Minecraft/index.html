@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>PaperMC Minecraft Server Controller</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 400px;
+      margin: 2rem auto;
+      text-align: center;
+    }
+    button {
+      background-color: #4CAF50;
+      color: white;
+      font-size: 1.2rem;
+      padding: 0.5rem 1.5rem;
+      border: none;
+      border-radius: 0.3rem;
+      cursor: pointer;
+    }
+    button:disabled {
+      background-color: #a5a5a5;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <h1>PaperMC Minecraft Server Controller</h1>
+  <p>Click the button below to start the PaperMC 1.16.5 Minecraft server via GitHub Actions.</p>
+  <button id="startServerBtn">Start Server</button>
+  <p id="statusMessage"></p>
+
+  <script>
+    const startButton = document.getElementById('startServerBtn');
+    const statusMessage = document.getElementById('statusMessage');
+
+    // GitHub repository info - customize these to your repo
+    const owner = 'AAWDAAWfwfAFAAWF';
+    const repo = 'AAWDAAWfwfAFAAWF.github.io';
+    const workflowId = 'VM.yml'; // The YAML workflow filename
+    const githubToken = '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'; // Must have workflow permissions
+
+    async function triggerWorkflow() {
+      startButton.disabled = true;
+      statusMessage.textContent = 'Starting server...';
+
+      const url = `https://api.github.com/repos/${owner}/${repo}/actions/workflows/${workflowId}/dispatches`;
+      const data = {
+        ref: 'main'
+      };
+
+      try {
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `token ${githubToken}`,
+            'Accept': 'application/vnd.github.v3+json'
+          },
+          body: JSON.stringify(data)
+        });
+
+        if (response.status === 204) {
+          statusMessage.textContent = 'Server start triggered successfully!';
+        } else {
+          const errorData = await response.json();
+          statusMessage.textContent = `Failed to start server: ${errorData.message || response.statusText}`;
+          startButton.disabled = false;
+        }
+      } catch (error) {
+        statusMessage.textContent = `Error: ${error.message}`;
+        startButton.disabled = false;
+      }
+    }
+
+    startButton.addEventListener('click', () => {
+      if (!githubToken || githubToken === 'YOUR_GITHUB_PERSONAL_ACCESS_TOKEN') {
+        alert('Please set your GitHub Personal Access Token in the script.');
+        return;
+      }
+      triggerWorkflow();
+    });
+  </script>
+</body>
+</html>

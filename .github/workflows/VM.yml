@@ -1,4 +1,4 @@
-name: Run on VM
+name: Run on Self-Hosted Linux Runner
 
 on:
   push:
@@ -9,20 +9,24 @@ on:
       - main
 
 jobs:
-  vm-job:
-    runs-on: ubuntu-latest
+  run-on-self-hosted:
+    runs-on: self-hosted
+    # You can add labels to target specific self-hosted runners like:
+    # runs-on: [self-hosted, linux, my-label]
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Python (example setup)
-        uses: actions/setup-python@v4
-        with:
-          python-version: '3.9'
-
-      - name: Run a script on the VM
+      - name: Display Linux info
         run: |
-          echo "Running on VM"
-          python --version
-          # Add more commands or scripts here
+          echo "Running on self-hosted runner"
+          uname -a
+          lsb_release -a || cat /etc/*-release || echo "No release info"
+
+      - name: Run interactive-style script (example)
+        run: |
+          echo "You can run any Linux commands here."
+          echo "Current directory content:"
+          ls -la
+          # Add your commands here

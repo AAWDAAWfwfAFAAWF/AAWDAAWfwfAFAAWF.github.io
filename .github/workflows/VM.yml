@@ -1,10 +1,10 @@
 name: PaperMC Minecraft Server 1.16.5 Host
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
   run-papermc-server:
@@ -17,14 +17,11 @@ jobs:
           distribution: 'temurin'
           java-version: 16
 
-      - name: Download PaperMC versions JSON and get server jar URL for 1.16.5
+      - name: Download PaperMC 1.16.5 server jar
         run: |
           mkdir mc_server
           cd mc_server
-          curl -s https://gist.githubusercontent.com/osipxd/6119732e30059241c2192c4a8d2218d9/raw/d8b5faadcfdfadfa0ff58dbf7c04cd10de16c678/paper-versions.json -o paper-versions.json
-          PAPER_URL=$(jq -r '.versions["1.16.5"]' paper-versions.json)
-          echo "PaperMC 1.16.5 server jar URL: $PAPER_URL"
-          wget -O paper.jar "$PAPER_URL"
+          curl -sL https://papermc.io/api/v2/projects/paper/versions/1.16.5/builds/788/downloads/paper-1.16.5-788.jar -o paper.jar
 
       - name: Accept EULA
         run: echo "eula=true" > mc_server/eula.txt
@@ -34,6 +31,5 @@ jobs:
           cd mc_server
           nohup java -Xmx1024M -Xms1024M -jar paper.jar nogui > nohup.out 2>&1 &
           sleep 20
-          IP=$(hostname -I | awk '{print $1}')
-          echo "PaperMC Server 1.16.5 is running at IP: $IP and Port: 25565"
+          echo "PaperMC Server 1.16.5 is running."
           tail -n 20 nohup.out

@@ -1,0 +1,23 @@
+name: Deploy Site on File Upload
+
+on:
+  push:
+    paths:
+      - 'uploads/**'       # Trigger only if files in uploads/ change
+      - 'upload.html'      # Or if the HTML file changes
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Optional: Add any processing on uploaded files here
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./      # Publish root directory (adjust as needed)

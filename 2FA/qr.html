@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>PlutoQR | Generator</title>
+    <script src="https://cdn.jsdelivr.net/npm/qr-code-styling@1.5.0/lib/qr-code-styling.js"></script>
+    <style>
+        body { font-family: sans-serif; background: #fff; color: #000; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { border: 2px solid #000; padding: 2rem; text-align: center; width: 350px; }
+        h2 { text-transform: uppercase; letter-spacing: 2px; }
+        input { width: 100%; padding: 12px; border: 1px solid #000; margin-bottom: 10px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: #000; color: #fff; border: none; cursor: pointer; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; }
+        button:hover { background: #333; }
+        #qr-canvas { margin-top: 20px; border: 1px solid #eee; display: inline-block; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>PlutoQR</h2>
+        <input type="text" id="urlInput" value="https://google.com">
+        <button onclick="generateQR()">Update Code</button>
+        <button onclick="prepareDownload()" style="background: #fff; color: #000; border: 1px solid #000;">Go to Download Page</button>
+        <div id="qr-canvas"></div>
+    </div>
+
+    <script>
+        const qrCode = new QRCodeStyling({
+            width: 300, height: 300, type: "canvas", data: "https://google.com",
+            image: "https://raw.githubusercontent.com/AAWDAAWfwfAFAAWF/C-Discord-Tkn/refs/heads/main/Icons/36382-1633784086_cropped-modified.jpg",
+            dotsOptions: { color: "#000000", type: "square" },
+            backgroundOptions: { color: "#ffffff" },
+            imageOptions: { crossOrigin: "anonymous", margin: 10, imageSize: 0.4 },
+            cornersSquareOptions: { type: "square", color: "#000000" },
+            cornersDotOptions: { type: "square", color: "#000000" }
+        });
+
+        qrCode.append(document.getElementById("qr-canvas"));
+
+        function generateQR() {
+            qrCode.update({ data: document.getElementById('urlInput').value.trim() });
+        }
+
+        async function prepareDownload() {
+            // Get the raw data from the canvas
+            const canvas = document.querySelector("#qr-canvas canvas");
+            const dataUrl = canvas.toDataURL("image/png");
+            // Store it in browser memory to "talk" to the next page
+            sessionStorage.setItem("pendingQR", dataUrl);
+            // Open the downloader
+            window.location.href = "download.html";
+        }
+    </script>
+</body>
+</html>

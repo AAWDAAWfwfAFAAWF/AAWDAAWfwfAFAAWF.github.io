@@ -108,6 +108,8 @@
     <div id="hidden-canvas"></div>
 
     <script>
+        let currentBlobUrl = null;
+
         const qrCode = new QRCodeStyling({
             width: 600,
             height: 600,
@@ -130,8 +132,13 @@
             setTimeout(() => {
                 const canvas = container.querySelector("canvas");
                 if (canvas) {
-                    const dataUrl = canvas.toDataURL("image/png");
-                    document.getElementById("final-image").src = dataUrl;
+                    canvas.toBlob((blob) => {
+                        if (currentBlobUrl) {
+                            URL.revokeObjectURL(currentBlobUrl);
+                        }
+                        currentBlobUrl = URL.createObjectURL(blob);
+                        document.getElementById("final-image").src = currentBlobUrl;
+                    }, "image/png");
                 }
             }, 100);
         }

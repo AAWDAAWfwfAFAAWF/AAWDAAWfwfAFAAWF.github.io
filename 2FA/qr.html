@@ -85,7 +85,6 @@
             opacity: 0.6;
         }
 
-        /* Hidden div for the library to render into */
         #hidden-canvas { display: none; }
     </style>
 </head>
@@ -96,23 +95,21 @@
         
         <div class="input-group">
             <input type="text" id="urlInput" value="https://google.com" placeholder="URL HERE">
-            <button onclick="updateQR()">GENTRATING...</button>
+            <button onclick="updateQR()">GENERATE</button>
         </div>
 
         <div id="qr-result">
-            <!-- This is the actual image tag users can right-click and save -->
             <img id="final-image" alt="QR Code" />
         </div>
 
         <p class="tip">Right click image to save or copy</p>
     </div>
 
-    <!-- Library renders here briefly before we convert to image -->
     <div id="hidden-canvas"></div>
 
     <script>
         const qrCode = new QRCodeStyling({
-            width: 600, // Higher resolution for saving
+            width: 600,
             height: 600,
             type: "canvas",
             data: "https://google.com",
@@ -130,7 +127,6 @@
             container.innerHTML = "";
             qrCode.append(container);
 
-            // Wait for the library to finish drawing
             setTimeout(() => {
                 const canvas = container.querySelector("canvas");
                 if (canvas) {
@@ -148,7 +144,6 @@
             }
         }
 
-        // Initial render
         window.onload = renderToImage;
     </script>
 </body>

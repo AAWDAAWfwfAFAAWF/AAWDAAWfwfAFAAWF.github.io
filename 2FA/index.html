@@ -8,8 +8,8 @@
     
     <textarea id="input" rows="8" cols="60" placeholder="Type here..."></textarea>
 
-    <p><strong>Result:</strong></p>
-    <div id="output" style="border: 1px solid black; padding: 10px; min-height: 50px; font-size: 20px; word-wrap: break-word;"></div>
+    <p><strong>Result:</strong> (Click to copy)</p>
+    <div id="output" style="border: 1px solid black; padding: 10px; min-height: 50px; font-size: 20px; word-wrap: break-word; cursor: pointer; transition: background-color 0.1s;"></div>
 
     <script>
         const map = {
@@ -35,26 +35,50 @@
 
         inputField.addEventListener('input', function() {
             const val = inputField.value;
-            
-            if (!val) {
-                outputField.innerText = "";
-                return;
-            }
+            if (!val) { outputField.innerText = ""; return; }
 
             const hasLettersOrNumbers = /[a-zA-Z0-9]/.test(val);
+            let result = "";
 
             if (hasLettersOrNumbers) {
-                let result = "";
-                for (let char of val) {
-                    result += map[char] || char;
-                }
-                outputField.innerText = result;
+                for (let char of val) { result += map[char] || char; }
             } else {
-                let result = "";
-                for (let char of val) {
-                    result += reverseMap[char] || char;
-                }
-                outputField.innerText = result;
+                for (let char of val) { result += reverseMap[char] || char; }
+            }
+            outputField.innerText = result;
+        });
+
+        outputField.addEventListener('click', function() {
+            const text = outputField.innerText;
+            if (!text) return;
+
+            // Fallback copy method for environments where navigator.clipboard fails
+            function fallbackCopy(val) {
+                const textArea = document.createElement("textarea");
+                textArea.value = val;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                } catch (err) {}
+                document.body.removeChild(textArea);
+            }
+
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(text).then(highlight).catch(() => {
+                    fallbackCopy(text);
+                    highlight();
+                });
+            } else {
+                fallbackCopy(text);
+                highlight();
+            }
+
+            function highlight() {
+                outputField.style.backgroundColor = "#ffff00";
+                setTimeout(() => {
+                    outputField.style.backgroundColor = "transparent";
+                }, 150);
             }
         });
     </script>

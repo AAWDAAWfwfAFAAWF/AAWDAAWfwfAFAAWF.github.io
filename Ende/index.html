@@ -1,0 +1,79 @@
+<html>
+<head>
+    <title>2fa</title>
+</head>
+<body>
+    <h2>get github code</h2>
+    <input type="text" id="secretInput" placeholder="Enter key here">
+    <button onclick="generateCode()">Get 2FA Code</button>
+   
+    <div id="result">
+        <h3>code: <span id="code">------</span></h3>
+        <div>Time remaining: <span id="timer">30</span> seconds</div>
+    </div>
+   
+    <script>
+        function generateCode() {
+            const input = document.getElementById('secretInput').value.trim();
+           
+            if (input === '') {
+                alert('enter secret');
+                return;
+            }
+           
+            const secretKey = "123456789";
+           
+            const time = Math.floor(Date.now() / 1000);
+            const timeStep = 30;
+            const counter = Math.floor(time / timeStep);
+           
+            let hashInput = counter.toString() + secretKey;
+            let hash = 0;
+           
+            for (let i = 0; i < hashInput.length; i++) {
+                hash = ((hash << 5) - hash) + hashInput.charCodeAt(i);
+                hash = hash & hash;
+            }
+           
+            let code = Math.abs(hash % 1000000);
+           
+            code = code.toString().padStart(6, '0');
+           
+            document.getElementById('code').textContent = code;
+           
+            startCountdown();
+        }
+       
+        function startCountdown() {
+            const timeStep = 30;
+            const now = Date.now() / 1000;
+            const timeLeft = timeStep - (now % timeStep);
+           
+            let secondsLeft = Math.floor(timeLeft);
+            document.getElementById('timer').textContent = secondsLeft;
+           
+            const timerInterval = setInterval(() => {
+                secondsLeft--;
+                document.getElementById('timer').textContent = secondsLeft;
+               
+                if (secondsLeft <= 0) {
+                    clearInterval(timerInterval);
+                    document.getElementById('timer').textContent = "0";
+                   
+                    setTimeout(() => {
+                        generateCode();
+                    }, 1000);
+                }
+            }, 1000);
+        }
+       
+        document.getElementById('secretInput').value = "";
+       
+        document.getElementById('secretInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                generateCode();
+            }
+        });
+    </script>
+</body>
+</html>
